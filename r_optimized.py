@@ -213,7 +213,7 @@ def process_user_question():
                 st.session_state.username,
                 st.session_state.botname,
                 bot_prompt,
-                "AIzaSyAWMudIst86dEBwP63BqFcy4mdjr34c87o",
+                "AIzaSyAWMudIst86dEBwP63BqFcy4mdjr34c87o", # GOOGLE_API_KEY
                 st.session_state.selected_language
             )
             end = time.time()
