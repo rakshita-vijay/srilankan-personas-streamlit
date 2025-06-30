@@ -242,12 +242,8 @@ def process_user_question():
 # ===== MEME GENERATOR FUNCTION =====
 # ===== IMAGE-BASED MEME GENERATOR FUNCTION ===== 
 def generate_image_meme_from_conversation(previous_conversation, language):
-    """Generate an image meme based on conversation context"""
+    """Generate an image meme based on conversation context""" 
     
-    '''- "drake" (Drake Hotline Bling - rejection vs approval)
-        - "distracted_boyfriend" (guy looking at another girl)
-        - "woman_yelling_at_cat" (woman pointing at confused cat)'''
-
     '''
     
     , "Holy Airball", "Chill Guy", "Muppets Storytime", "100 Men vs. 1 Gorilla", "Trump and Eggs", "Drake Hotline Bling", "Distracted Boyfriend", "Woman Yelling at Cat", "Holy Airball", "Chill Guy", "Muppets Storytime", "100 Men vs. 1 Gorilla", "Trump and Eggs", "Two Buttons", "Batman Slapping Robin", "Expanding Brain", "Mocking SpongeBob", "UNO Draw 25", "Boardroom Meeting Suggestion", "Ancient Aliens", "Disaster Girl", "Buff Doge vs. Cheems", "Roll Safe Think About It", "The Little French Fish (Steve)", "The Conclave Memes", "Take Me to God's Country", "Work From Home For Life", "Chat GPT Made Me Who I Am", "Buzz Word Buffoonery", "If Your Browser Ain’t Slowing Your Computer Down, You’re Not Doing It Right"
@@ -265,10 +261,8 @@ def generate_image_meme_from_conversation(previous_conversation, language):
         context_hint = "Focus on general coding/AI humor" 
 
     # Generate meme text using AI
-    meme_list = ["Drake Hotline Bling", "Distracted Boyfriend", "Woman Yelling at Cat"] 
-    
     meme_prompt = f'''You are a viral meme creator. 
-    Based on this conversation between {st.session_state.username} and {st.session_state.botname}: {previous_conversation[-400:]}
+    Based on this conversation between {st.session_state.username} and {st.session_state.botname}: {previous_conversation[-1000:]}
     
     Create a HILARIOUS meme that references something specific from this conversation.
     
