@@ -19,7 +19,7 @@ QUESTIONS_FOLDER = "Questions"
 USER_INFO_FILE = "TO_INPUT/user_info.txt"
 TRAITS_FILE = "TO_INPUT/traits.txt"
 LANGUAGES_FILE = "TO_INPUT/languages.txt"
-MEME_FOLDER = "MEMES"
+MEME_FOLDER = "TRENDING_MEMES"
 
 def load_user_info():
     username = "User"
