@@ -5,7 +5,7 @@ Original file is located at: https://colab.research.google.com/drive/15bLkrgQW-n
 
 # !pip install llama-index-llms-google-
 
-import time, os, glob, io, base64
+import time, os, glob, io, base64, datetime
 
 import streamlit as st
 import pandas as pd 
@@ -244,13 +244,13 @@ def generate_image_meme_from_conversation(previous_conversation, language):
     """Generate an image meme based on conversation context"""
     # Generate meme text using AI
     meme_prompt = (
-        "Create a funny meme text (max 2 lines) based on this conversation. "
-        "Format: [Top Text]\n[Bottom Text]. "
-        "Use sarcasm or internet humor. "
-        "Focus on the most recent exchange. "
-        "Respond ONLY with the meme text, no explanations. "
-        "Conversation:\n"
-        f"{previous_conversation[-500:]}"
+        f'''
+        Pick a current trending meme template from this list: ["Drake Hotline Bling", "Distracted Boyfriend", "Woman Yelling at Cat", "Holy Airball", "Chill Guy", "Muppets Storytime", "100 Men vs. 1 Gorilla", "Trump and Eggs"]. 
+        Given the following conversation, generate a meme for that template using a viral joke or reference from {(datetime.datetime.today()).year}. 
+        max 2 lines, Use sarcasm, Respond ONLY with the meme text, no explanations.
+        Format: [Top Text]\n[Bottom Text]. 
+        Conversation: {previous_conversation[-500:]}
+        ''' 
     )
     
     try:
@@ -396,7 +396,7 @@ else:
 
 # PHASE 2: SETUP CONFIGURATION
 if not st.session_state.setup_completed:
-    st.title("🔧 Persona Configuration")
+    st.title("🔧 Persona Configuration <3")
     st.markdown(f"### Configuring: {st.session_state.botname} ({st.session_state.bot_origin})")
     st.markdown("---")
     st.subheader("📋 Select Personality Traits")
