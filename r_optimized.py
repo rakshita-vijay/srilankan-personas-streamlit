@@ -319,12 +319,16 @@ def generate_image_meme_from_conversation(previous_conversation, language):
         
         for line in lines:
             line = line.strip()
-            if line.lower().startswith("template:"):
-                template_name = line.split(":", 1)[1].strip().lower().replace(" ", "_").replace("hotline_bling", "drake_hotline_bling")
+            if line.lower().startswith("template:"): 
+                template_name = line.split(":", 1)[1].strip().lower().replace(" ", "_") 
             elif line.lower().startswith("top:"):
                 top_text = line.split(":", 1)[1].strip().strip('[]"')
             elif line.lower().startswith("bottom:"):
                 bottom_text = line.split(":", 1)[1].strip().strip('[]"') 
+
+        if "drake" in template_name:
+            template_name = "drake_hotline_bling"
+            st.write(f"Forced template to: {template_name}")
 
         # Debug: Print parsed values
         st.write(f"DEBUG - Parsed: Template={template_name}, Top={top_text}, Bottom={bottom_text}")
@@ -349,14 +353,31 @@ def generate_image_meme_from_conversation(previous_conversation, language):
 def create_meme_image(top_text, bottom_text, template_name="drake", width=800, height=600):
     """Create a meme image with top and bottom text using real templates"""
     try:
-        # Map template names to file names 
+        # Map template names to file names
         template_files = {
-            "distracted_boyfriend": "TRENDING_MEMES/distracted_boyfriend.jpg",
-            "drake_hotline_bling": "TRENDING_MEMES/drake_hotline_bling.jpg", 
+            "drake_hotline_bling": "TRENDING_MEMES/drake_hotline_bling.jpg",
+            "distracted_boyfriend": "TRENDING_MEMES/distracted_boyfriend.jpg", 
             "woman_yelling_at_cat": "TRENDING_MEMES/woman_yelling_at_cat.jpg",
-            "drake": "TRENDING_MEMES/drake_hotline_bling.jpg"  # fallback mapping
-        } 
+            "drake": "TRENDING_MEMES/drake_hotline_bling.jpg"
+        }
         
+        # Debug: Check if file exists
+        st.write(f"Looking for template: {template_name}")
+        st.write(f"File exists: {os.path.exists(template_files.get(template_name, ''))}")
+
+        # Debug file existence
+        if template_name in template_files:
+            file_path = template_files[template_name]
+            st.write(f"Template file path: {file_path}")
+            st.write(f"File exists: {os.path.exists(file_path)}")
+            if not os.path.exists(file_path):
+                st.error(f"MEME TEMPLATE NOT FOUND: {file_path}")
+                st.write("Available files in TRENDING_MEMES:")
+                if os.path.exists("TRENDING_MEMES"):
+                    st.write(os.listdir("TRENDING_MEMES"))
+                else:
+                    st.error("TRENDING_MEMES folder doesn't exist!")
+                    X$
         # Load the template image or create fallback
         template_path = template_files.get(template_name, None)
         if template_path and os.path.exists(template_path):
@@ -467,7 +488,7 @@ else:
 
 # PHASE 2: SETUP CONFIGURATION
 if not st.session_state.setup_completed:
-    st.title("🔧 Persona Configuration <3 :)")
+    st.title("🔧 Persona Configuration <33")
     st.markdown(f"### Configuring: {st.session_state.botname} ({st.session_state.bot_origin})")
     st.markdown("---")
     st.subheader("📋 Select Personality Traits")
