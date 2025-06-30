@@ -19,6 +19,7 @@ QUESTIONS_FOLDER = "Questions"
 USER_INFO_FILE = "TO_INPUT/user_info.txt"
 TRAITS_FILE = "TO_INPUT/traits.txt"
 LANGUAGES_FILE = "TO_INPUT/languages.txt"
+MEME_FOLDER = "MEMES"
 
 def load_user_info():
     username = "User"
@@ -252,6 +253,32 @@ def generate_image_meme_from_conversation(previous_conversation, language):
         Conversation: {previous_conversation[-500:]}
         ''' 
     )
+
+def generate_image_meme_from_conversation(previous_conversation, language):
+    """Generate an image meme based on conversation context"""
+    
+    '''- "drake" (Drake Hotline Bling - rejection vs approval)
+        - "distracted_boyfriend" (guy looking at another girl)
+        - "woman_yelling_at_cat" (woman pointing at confused cat)'''
+    
+    # Generate meme text using AI
+    meme_list = ["Drake Hotline Bling", "Distracted Boyfriend", "Woman Yelling at Cat", "Holy Airball", "Chill Guy", "Muppets Storytime", "100 Men vs. 1 Gorilla", "Trump and Eggs", "Drake Hotline Bling", "Distracted Boyfriend", "Woman Yelling at Cat", "Holy Airball", "Chill Guy", "Muppets Storytime", "100 Men vs. 1 Gorilla", "Trump and Eggs", "Two Buttons", "Batman Slapping Robin", "Expanding Brain", "Mocking SpongeBob", "UNO Draw 25", "Boardroom Meeting Suggestion", "Ancient Aliens", "Disaster Girl", "Buff Doge vs. Cheems", "Roll Safe Think About It", "The Little French Fish (Steve)", "The Conclave Memes", "Take Me to God's Country", "Work From Home For Life", "Chat GPT Made Me Who I Am", "Buzz Word Buffoonery", "If Your Browser Ain’t Slowing Your Computer Down, You’re Not Doing It Right"]
+    
+    meme_prompt = (
+        f'''Pick a meme template from this list and generate funny text for it: {meme_list}.
+        Take the images for the {MEME_FOLDER}
+        
+        Conversation: {previous_conversation[-500:]} 
+        Given this conversation, pick the best template and create a meme.
+        
+        Format your response EXACTLY like this:
+        Template: template_name
+        Top: [top text] 
+        Bottom: [bottom text]
+        
+        Use viral 2025 humor and sarcasm.'''
+    )
+
     
     try:
         meme_text = call_gemini_local(
