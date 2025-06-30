@@ -237,6 +237,34 @@ def process_user_question():
         })
     st.session_state.user_input = ""
 
+# ===== MEME GENERATOR FUNCTION =====
+def generate_meme_from_conversation(previous_conversation, language):
+    """Generate a meme based on conversation context"""
+    meme_prompt = (
+        "Create a funny meme text (max 2 lines) based on this conversation. "
+        "Format: [Top Text]\n[Bottom Text]. "
+        "Use sarcasm or internet humor. "
+        "Focus on the most recent exchange. "
+        "Respond ONLY with the meme text, no explanations. "
+        "Conversation:\n"
+        f"{previous_conversation[-500:]}"  # Use last 500 chars for context
+    )
+    
+    try:
+        meme_text = call_gemini_local(
+            query=meme_prompt,
+            previous_conversation="",
+            gender="",
+            username="MemeGenerator",
+            botname="MemeBot",
+            bot_prompt="You are a meme creation AI. Generate funny meme text based on the given conversation snippet.",
+            llm_api_key_string="AIzaSyAWMudIst86dEBwP63BqFcy4mdjr34c87o",
+            language=language
+        )
+        return meme_text.strip().replace('"', '').replace("'", "")
+    except Exception as e:
+        return f"Meme generation failed: {str(e)}"
+
 # PHASE 1: PERSONA SELECTION (ALWAYS SHOW AT TOP)
 persona_files = get_persona_files()
 if persona_files:
