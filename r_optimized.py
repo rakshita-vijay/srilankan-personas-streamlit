@@ -376,8 +376,7 @@ def create_meme_image(top_text, bottom_text, template_name="drake", width=800, h
                 if os.path.exists("TRENDING_MEMES"):
                     st.write(os.listdir("TRENDING_MEMES"))
                 else:
-                    st.error("TRENDING_MEMES folder doesn't exist!")
-                    X$
+                    st.error("TRENDING_MEMES folder doesn't exist!") 
         # Load the template image or create fallback
         template_path = template_files.get(template_name, None)
         if template_path and os.path.exists(template_path):
