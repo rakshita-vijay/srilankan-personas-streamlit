@@ -255,35 +255,31 @@ def generate_image_meme_from_conversation(previous_conversation, language):
     '''
     
     # Generate meme text using AI
-    meme_list = ["Drake Hotline Bling", "Distracted Boyfriend", "Woman Yelling at Cat"]
+    meme_list = ["Drake Hotline Bling", "Distracted Boyfriend", "Woman Yelling at Cat"] 
     
-    # meme_prompt = (
-    #     f'''Pick a meme template from this list - {meme_list} - and generate funny text for it.
-    #     Take the images for the {MEME_FOLDER}
-        
-    #     Conversation: {previous_conversation[-500:]} 
-    #     Given this conversation, pick the best template and create a meme.
-        
-    #     Format your response EXACTLY like this:
-    #     Template: template_name
-    #     Top: [top text] 
-    #     Bottom: [bottom text]
-        
-    #     Use viral 2025 humor and sarcasm.'''
-    # ) 
+    meme_prompt = f'''You are a viral meme creator. 
+    Based on this conversation between {st.session_state.username} and {st.session_state.botname}: {previous_conversation[-400:]}
+    
+    Create a HILARIOUS meme that references something specific from this conversation.
+    
+    Pick the BEST template from: ["distracted_boyfriend", "drake_hotline_bling", "woman_yelling_at_cat"]
+    
+    RULES:
+    - Make it ACTUALLY funny and relatable
+    - Reference something SPECIFIC from the conversation
+    - Use current internet humor/slang
+    - Keep text short and punchy
+    
+    Format EXACTLY like this (no extra text):
+    Template: template_name
+    Top: [funny top text]
+    Bottom: [funny bottom text]
+    
+    Example:
+    Template: distracted_boyfriend
+    Top: Me focused on coding
+    Bottom: New meme feature ideas'''
 
-    meme_prompt = (
-    f'''Based on this conversation: {previous_conversation[-500:]}
-    
-    Create a meme using one of the templates from {meme_list}.
-    
-    You MUST respond in EXACTLY this format (no extra text):
-    Template: woman_yelling_at_cat
-    Top: [your funny top text here]
-    Bottom: [your funny bottom text here]
-    
-    Make it funny and relevant to the conversation. Use internet humor.'''
-    ) 
     
     try:
         meme_text = call_gemini_local(
@@ -306,15 +302,22 @@ def generate_image_meme_from_conversation(previous_conversation, language):
         lines = meme_text.strip().split('\n')
         template_name = "drake"  # default
         top_text = "TOP TEXT"
-        bottom_text = "BOTTOM TEXT"
+        bottom_text = "BOTTOM TEXT" 
+
+        # Debug: Print what AI actually returned
+        st.write("DEBUG - AI Response:", repr(meme_text))
         
         for line in lines:
-            if line.startswith("Template:"):
-                template_name = line.split(":", 1)[1].strip().lower().replace(" ", "_")
-            elif line.startswith("Top:"):
-                top_text = line.split(":", 1)[1].strip()
-            elif line.startswith("Bottom:"):
-                bottom_text = line.split(":", 1)[1].strip() 
+            line = line.strip()
+            if line.lower().startswith("template:"):
+                template_name = line.split(":", 1)[1].strip().lower().replace(" ", "_").replace("hotline_bling", "drake_hotline_bling")
+            elif line.lower().startswith("top:"):
+                top_text = line.split(":", 1)[1].strip().strip('[]"')
+            elif line.lower().startswith("bottom:"):
+                bottom_text = line.split(":", 1)[1].strip().strip('[]"')
+        
+        # Debug: Print parsed values
+        st.write(f"DEBUG - Parsed: Template={template_name}, Top={top_text}, Bottom={bottom_text}") 
         
         # Create meme image
         meme_image = create_meme_image(top_text, bottom_text, template_name)
@@ -330,8 +333,9 @@ def create_meme_image(top_text, bottom_text, template_name="drake", width=800, h
         template_files = {
             "drake_hotline_bling": "TRENDING_MEMES/drake_hotline_bling.jpg",
             "distracted_boyfriend": "TRENDING_MEMES/distracted_boyfriend.jpg", 
-            "woman_yelling_at_cat": "TRENDING_MEMES/woman_yelling_at_cat.jpg"
-        }
+            "woman_yelling_at_cat": "TRENDING_MEMES/woman_yelling_at_cat.jpg",
+            "drake": "TRENDING_MEMES/drake_hotline_bling.jpg"
+        } 
         
         # Load the template image or create fallback
         template_path = template_files.get(template_name, None)
