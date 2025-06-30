@@ -270,8 +270,7 @@ def generate_image_meme_from_conversation(previous_conversation, language):
         Bottom: [bottom text]
         
         Use viral 2025 humor and sarcasm.'''
-    )
-
+    ) 
     
     try:
         meme_text = call_gemini_local(
@@ -280,7 +279,7 @@ def generate_image_meme_from_conversation(previous_conversation, language):
             gender="",
             username="MemeGenerator",
             botname="MemeBot",
-            bot_prompt="You are a meme creation AI. Generate funny meme text based on the given conversation snippet.",
+            bot_prompt="You are a meme creation AI. Generate funny meme text (in a readable font size) based on the given conversation snippet.",
             llm_api_key_string="AIzaSyAWMudIst86dEBwP63BqFcy4mdjr34c87o",
             language=language
         )
@@ -306,7 +305,7 @@ def generate_image_meme_from_conversation(previous_conversation, language):
         
         # Create meme image
         meme_image = create_meme_image(top_text, bottom_text, template_name)
-        return meme_image, f"{top_text}\n{bottom_text}"
+        return meme_image 
         
     except Exception as e:
         return None, f"Meme generation failed: {str(e)}"
