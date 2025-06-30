@@ -596,7 +596,7 @@ if st.session_state.selected_persona and st.session_state.questions:
             })
         
         # Generate meme
-        meme_image, meme_text = generate_image_meme_from_conversation(
+        meme_image = generate_image_meme_from_conversation(
             st.session_state.previous_conversation,
             st.session_state.selected_language
         )
@@ -606,15 +606,13 @@ if st.session_state.selected_persona and st.session_state.questions:
             img_base64 = image_to_base64(meme_image)
             
             st.session_state.conversation_events.append({
-                "type": "meme",
-                "content": meme_text,
+                "type": "meme", 
                 "image": img_base64,
                 "time": time.time()
             })
         else:
             st.session_state.conversation_events.append({
-                "type": "meme",
-                "content": meme_text,  # This will be the error message
+                "type": "meme", 
                 "image": None,
                 "time": time.time()
             })
@@ -719,7 +717,7 @@ if st.session_state.selected_persona and st.session_state.questions:
                     st.image(img_data, caption="Generated Meme", use_container_width=True)
                     
                     # Show the text content too
-                    st.code(event["content"], language="text")
+                    # st.code(event["content"], language="text")
                     
                     # Download button for the meme
                     st.download_button(
