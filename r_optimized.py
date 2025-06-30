@@ -257,19 +257,32 @@ def generate_image_meme_from_conversation(previous_conversation, language):
     # Generate meme text using AI
     meme_list = ["Drake Hotline Bling", "Distracted Boyfriend", "Woman Yelling at Cat"]
     
+    # meme_prompt = (
+    #     f'''Pick a meme template from this list - {meme_list} - and generate funny text for it.
+    #     Take the images for the {MEME_FOLDER}
+        
+    #     Conversation: {previous_conversation[-500:]} 
+    #     Given this conversation, pick the best template and create a meme.
+        
+    #     Format your response EXACTLY like this:
+    #     Template: template_name
+    #     Top: [top text] 
+    #     Bottom: [bottom text]
+        
+    #     Use viral 2025 humor and sarcasm.'''
+    # ) 
+
     meme_prompt = (
-        f'''Pick a meme template from this list - {meme_list} - and generate funny text for it.
-        Take the images for the {MEME_FOLDER}
-        
-        Conversation: {previous_conversation[-500:]} 
-        Given this conversation, pick the best template and create a meme.
-        
-        Format your response EXACTLY like this:
-        Template: template_name
-        Top: [top text] 
-        Bottom: [bottom text]
-        
-        Use viral 2025 humor and sarcasm.'''
+    f'''Based on this conversation: {previous_conversation[-500:]}
+    
+    Create a meme using one of the templates from {meme_list}.
+    
+    You MUST respond in EXACTLY this format (no extra text):
+    Template: woman_yelling_at_cat
+    Top: [your funny top text here]
+    Bottom: [your funny bottom text here]
+    
+    Make it funny and relevant to the conversation. Use internet humor.'''
     ) 
     
     try:
