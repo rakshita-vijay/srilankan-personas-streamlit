@@ -682,7 +682,7 @@ if st.session_state.selected_persona and st.session_state.questions:
                 if event.get("image"):
                     # Display the meme image
                     img_data = base64.b64decode(event["image"])
-                    st.image(img_data, caption="Generated Meme", use_column_width=True)
+                    st.image(img_data, caption="Generated Meme", use_container_width=True)
                     
                     # Show the text content too
                     st.code(event["content"], language="text")
