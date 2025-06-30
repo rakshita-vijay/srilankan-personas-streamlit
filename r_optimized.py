@@ -240,32 +240,25 @@ def process_user_question():
     st.session_state.user_input = ""
 
 # ===== MEME GENERATOR FUNCTION =====
-# ===== IMAGE-BASED MEME GENERATOR FUNCTION =====
-def generate_image_meme_from_conversation(previous_conversation, language):
-    """Generate an image meme based on conversation context"""
-    # Generate meme text using AI
-    meme_prompt = (
-        f'''
-        Pick a current trending meme template from this list: ["Drake Hotline Bling", "Distracted Boyfriend", "Woman Yelling at Cat", "Holy Airball", "Chill Guy", "Muppets Storytime", "100 Men vs. 1 Gorilla", "Trump and Eggs"]. 
-        Given the following conversation, generate a meme for that template using a viral joke or reference from {(datetime.datetime.today()).year}. 
-        max 2 lines, Use sarcasm, Respond ONLY with the meme text, no explanations.
-        Format: [Top Text]\n[Bottom Text]. 
-        Conversation: {previous_conversation[-500:]}
-        ''' 
-    )
-
+# ===== IMAGE-BASED MEME GENERATOR FUNCTION ===== 
 def generate_image_meme_from_conversation(previous_conversation, language):
     """Generate an image meme based on conversation context"""
     
     '''- "drake" (Drake Hotline Bling - rejection vs approval)
         - "distracted_boyfriend" (guy looking at another girl)
         - "woman_yelling_at_cat" (woman pointing at confused cat)'''
+
+    '''
+    
+    , "Holy Airball", "Chill Guy", "Muppets Storytime", "100 Men vs. 1 Gorilla", "Trump and Eggs", "Drake Hotline Bling", "Distracted Boyfriend", "Woman Yelling at Cat", "Holy Airball", "Chill Guy", "Muppets Storytime", "100 Men vs. 1 Gorilla", "Trump and Eggs", "Two Buttons", "Batman Slapping Robin", "Expanding Brain", "Mocking SpongeBob", "UNO Draw 25", "Boardroom Meeting Suggestion", "Ancient Aliens", "Disaster Girl", "Buff Doge vs. Cheems", "Roll Safe Think About It", "The Little French Fish (Steve)", "The Conclave Memes", "Take Me to God's Country", "Work From Home For Life", "Chat GPT Made Me Who I Am", "Buzz Word Buffoonery", "If Your Browser Ain’t Slowing Your Computer Down, You’re Not Doing It Right"
+    
+    '''
     
     # Generate meme text using AI
-    meme_list = ["Drake Hotline Bling", "Distracted Boyfriend", "Woman Yelling at Cat", "Holy Airball", "Chill Guy", "Muppets Storytime", "100 Men vs. 1 Gorilla", "Trump and Eggs", "Drake Hotline Bling", "Distracted Boyfriend", "Woman Yelling at Cat", "Holy Airball", "Chill Guy", "Muppets Storytime", "100 Men vs. 1 Gorilla", "Trump and Eggs", "Two Buttons", "Batman Slapping Robin", "Expanding Brain", "Mocking SpongeBob", "UNO Draw 25", "Boardroom Meeting Suggestion", "Ancient Aliens", "Disaster Girl", "Buff Doge vs. Cheems", "Roll Safe Think About It", "The Little French Fish (Steve)", "The Conclave Memes", "Take Me to God's Country", "Work From Home For Life", "Chat GPT Made Me Who I Am", "Buzz Word Buffoonery", "If Your Browser Ain’t Slowing Your Computer Down, You’re Not Doing It Right"]
+    meme_list = ["Drake Hotline Bling", "Distracted Boyfriend", "Woman Yelling at Cat"]
     
     meme_prompt = (
-        f'''Pick a meme template from this list and generate funny text for it: {meme_list}.
+        f'''Pick a meme template from this list - {meme_list} - and generate funny text for it.
         Take the images for the {MEME_FOLDER}
         
         Conversation: {previous_conversation[-500:]} 
