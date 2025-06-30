@@ -5,13 +5,14 @@ Original file is located at: https://colab.research.google.com/drive/15bLkrgQW-n
 
 # !pip install llama-index-llms-google-
 
-import time
+import time, os, glob, io, base64
+
 import streamlit as st
-import pandas as pd
-import os
-import glob
+import pandas as pd 
+
 from llama_index.llms.google_genai import GoogleGenAI
 from google import genai
+from PIL import Image, ImageDraw, ImageFont 
 
 PERSONAS_FOLDER = "Personas"
 QUESTIONS_FOLDER = "Questions"
@@ -238,8 +239,10 @@ def process_user_question():
     st.session_state.user_input = ""
 
 # ===== MEME GENERATOR FUNCTION =====
-def generate_meme_from_conversation(previous_conversation, language):
-    """Generate a meme based on conversation context"""
+# ===== IMAGE-BASED MEME GENERATOR FUNCTION =====
+def generate_image_meme_from_conversation(previous_conversation, language):
+    """Generate an image meme based on conversation context"""
+    # Generate meme text using AI
     meme_prompt = (
         "Create a funny meme text (max 2 lines) based on this conversation. "
         "Format: [Top Text]\n[Bottom Text]. "
@@ -247,7 +250,7 @@ def generate_meme_from_conversation(previous_conversation, language):
         "Focus on the most recent exchange. "
         "Respond ONLY with the meme text, no explanations. "
         "Conversation:\n"
-        f"{previous_conversation[-500:]}"  # Use last 500 chars for context
+        f"{previous_conversation[-500:]}"
     )
     
     try:
@@ -261,9 +264,85 @@ def generate_meme_from_conversation(previous_conversation, language):
             llm_api_key_string="AIzaSyAWMudIst86dEBwP63BqFcy4mdjr34c87o",
             language=language
         )
-        return meme_text.strip().replace('"', '').replace("'", "")
+        
+        # Parse top and bottom text
+        lines = meme_text.strip().split('\n')
+        top_text = lines[0].strip('[]') if len(lines) > 0 else "TOP TEXT"
+        bottom_text = lines[1].strip('[]') if len(lines) > 1 else "BOTTOM TEXT"
+        
+        # Create meme image
+        meme_image = create_meme_image(top_text, bottom_text)
+        return meme_image, f"{top_text}\n{bottom_text}"
+        
     except Exception as e:
-        return f"Meme generation failed: {str(e)}"
+        return None, f"Meme generation failed: {str(e)}"
+
+def create_meme_image(top_text, bottom_text, width=800, height=600):
+    """Create a meme image with top and bottom text"""
+    try:
+        # Create a simple background (you can replace with actual image upload later)
+        img = Image.new('RGB', (width, height), color='white')
+        draw = ImageDraw.Draw(img)
+        
+        # Draw a simple background pattern or solid color
+        # For demo purposes, creating a gradient background
+        for y in range(height):
+            color_value = int(255 * (1 - y / height))
+            draw.line([(0, y), (width, y)], fill=(color_value, color_value, 255))
+        
+        # Try to load a bold font, fall back to default if not available
+        try:
+            font_size = 60
+            font = ImageFont.truetype("arial.ttf", font_size)
+        except:
+            try:
+                font = ImageFont.truetype("/System/Library/Fonts/Arial.ttf", 60)  # macOS
+            except:
+                try:
+                    font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 60)  # Linux
+                except:
+                    font = ImageFont.load_default()
+        
+        # Add text outline for better visibility
+        def draw_text_with_outline(draw, position, text, font, fill_color, outline_color, outline_width=3):
+            x, y = position
+            # Draw outline
+            for dx in range(-outline_width, outline_width + 1):
+                for dy in range(-outline_width, outline_width + 1):
+                    if dx != 0 or dy != 0:
+                        draw.text((x + dx, y + dy), text, font=font, fill=outline_color)
+            # Draw main text
+            draw.text(position, text, font=font, fill=fill_color)
+        
+        # Calculate text positions
+        top_bbox = draw.textbbox((0, 0), top_text, font=font)
+        bottom_bbox = draw.textbbox((0, 0), bottom_text, font=font)
+        
+        top_x = (width - (top_bbox[2] - top_bbox[0])) // 2
+        top_y = 50
+        
+        bottom_x = (width - (bottom_bbox[2] - bottom_bbox[0])) // 2
+        bottom_y = height - 150
+        
+        # Draw text with outline
+        draw_text_with_outline(draw, (top_x, top_y), top_text, font, 'white', 'black')
+        draw_text_with_outline(draw, (bottom_x, bottom_y), bottom_text, font, 'white', 'black')
+        
+        return img
+        
+    except Exception as e:
+        # Fallback: create simple text image
+        img = Image.new('RGB', (width, height), color='lightblue')
+        draw = ImageDraw.Draw(img)
+        draw.text((50, height//2), f"{top_text}\n\n{bottom_text}", fill='black')
+        return img
+
+def image_to_base64(img):
+    """Convert PIL Image to base64 for display in Streamlit"""
+    buffer = io.BytesIO()
+    img.save(buffer, format='PNG')
+    img_str = base64.b64encode(buffer.getvalue()).decode()
+    return img_str
 
 # PHASE 1: PERSONA SELECTION (ALWAYS SHOW AT TOP)
 persona_files = get_persona_files()
@@ -470,17 +549,42 @@ if st.session_state.selected_persona and st.session_state.questions:
             on_change=process_user_question
         )
 
-    # ===== MEME GENERATOR BUTTON =====
+    # MEME GENERATOR BUTTON 
     if st.button("🎭 Generate Meme from Conversation", key="generate_meme"):
-        meme_text = generate_meme_from_conversation(
+        # Pause bulk generation if running (similar to individual questions)
+        if st.session_state.bulk_running and not st.session_state.paused:
+            st.session_state.paused = True
+            st.session_state.show_resume = True
+            st.session_state.conversation_events.append({
+                "type": "bulk_paused",
+                "message": f"{st.session_state.current_question_index} questions answered in bulk mode. Generation paused for meme creation.",
+                "time": time.time()
+            })
+        
+        # Generate meme
+        meme_image, meme_text = generate_image_meme_from_conversation(
             st.session_state.previous_conversation,
             st.session_state.selected_language
         )
-        st.session_state.conversation_events.append({
-            "type": "meme",
-            "content": meme_text,
-            "time": time.time()
-        })
+        
+        if meme_image:
+            # Convert image to base64 for storage
+            img_base64 = image_to_base64(meme_image)
+            
+            st.session_state.conversation_events.append({
+                "type": "meme",
+                "content": meme_text,
+                "image": img_base64,
+                "time": time.time()
+            })
+        else:
+            st.session_state.conversation_events.append({
+                "type": "meme",
+                "content": meme_text,  # This will be the error message
+                "image": None,
+                "time": time.time()
+            })
+        
         st.rerun()
 
     # Progress Bar Section
@@ -569,13 +673,34 @@ if st.session_state.selected_persona and st.session_state.questions:
                         unsafe_allow_html=True
                     )
                 st.markdown("") 
+
             elif event["type"] == "meme":
                 st.markdown("---")
                 st.markdown("### 🎭 Generated Meme")
                 st.markdown(f"**{st.session_state.botname}:**")
-                st.code(event["content"], language="text")
+                
+                if event.get("image"):
+                    # Display the meme image
+                    img_data = base64.b64decode(event["image"])
+                    st.image(img_data, caption="Generated Meme", use_column_width=True)
+                    
+                    # Show the text content too
+                    st.code(event["content"], language="text")
+                    
+                    # Download button for the meme
+                    st.download_button(
+                        label="Download Meme",
+                        data=img_data,
+                        file_name=f"meme_{int(event['time'])}.png",
+                        mime="image/png",
+                        key=f"download_meme_{event['time']}"
+                    )
+                else:
+                    # Fallback to text display if image generation failed
+                    st.code(event["content"], language="text")
+                
                 st.markdown(f"*Generated at {time.strftime('%H:%M:%S', time.localtime(event['time']))}*")
-                st.markdown("---")
+                st.markdown("---") 
                 
             elif event["type"] == "bulk_started":
                 st.markdown("---")
