@@ -253,7 +253,17 @@ def generate_image_meme_from_conversation(previous_conversation, language):
     , "Holy Airball", "Chill Guy", "Muppets Storytime", "100 Men vs. 1 Gorilla", "Trump and Eggs", "Drake Hotline Bling", "Distracted Boyfriend", "Woman Yelling at Cat", "Holy Airball", "Chill Guy", "Muppets Storytime", "100 Men vs. 1 Gorilla", "Trump and Eggs", "Two Buttons", "Batman Slapping Robin", "Expanding Brain", "Mocking SpongeBob", "UNO Draw 25", "Boardroom Meeting Suggestion", "Ancient Aliens", "Disaster Girl", "Buff Doge vs. Cheems", "Roll Safe Think About It", "The Little French Fish (Steve)", "The Conclave Memes", "Take Me to God's Country", "Work From Home For Life", "Chat GPT Made Me Who I Am", "Buzz Word Buffoonery", "If Your Browser Ain’t Slowing Your Computer Down, You’re Not Doing It Right"
     
     '''
+
+    # Extract key topics from conversation for better context
+    conversation_summary = previous_conversation[-200:].lower()
+    context_words = ["coding", "streamlit", "meme", "ai", "persona", "chat", "bug", "error", "generation"]
+    found_context = [word for word in context_words if word in conversation_summary]
     
+    if found_context:
+        context_hint = f"Focus on: {', '.join(found_context[:3])}"
+    else:
+        context_hint = "Focus on general coding/AI humor" 
+
     # Generate meme text using AI
     meme_list = ["Drake Hotline Bling", "Distracted Boyfriend", "Woman Yelling at Cat"] 
     
@@ -314,10 +324,20 @@ def generate_image_meme_from_conversation(previous_conversation, language):
             elif line.lower().startswith("top:"):
                 top_text = line.split(":", 1)[1].strip().strip('[]"')
             elif line.lower().startswith("bottom:"):
-                bottom_text = line.split(":", 1)[1].strip().strip('[]"')
-        
+                bottom_text = line.split(":", 1)[1].strip().strip('[]"') 
+
         # Debug: Print parsed values
-        st.write(f"DEBUG - Parsed: Template={template_name}, Top={top_text}, Bottom={bottom_text}") 
+        st.write(f"DEBUG - Parsed: Template={template_name}, Top={top_text}, Bottom={bottom_text}")
+        
+        # Fallback if parsing still fails
+        if top_text == "TOP TEXT" or bottom_text == "BOTTOM TEXT":
+            # Use conversation-based fallbacks
+            if "meme" in previous_conversation.lower():
+                top_text = "When you ask for a meme"
+                bottom_text = "But get placeholder text instead"
+            else:
+                top_text = f"Talking to {st.session_state.botname}"
+                bottom_text = "Actually getting good responses"
         
         # Create meme image
         meme_image = create_meme_image(top_text, bottom_text, template_name)
@@ -329,12 +349,12 @@ def generate_image_meme_from_conversation(previous_conversation, language):
 def create_meme_image(top_text, bottom_text, template_name="drake", width=800, height=600):
     """Create a meme image with top and bottom text using real templates"""
     try:
-        # Map template names to file names
+        # Map template names to file names 
         template_files = {
-            "drake_hotline_bling": "TRENDING_MEMES/drake_hotline_bling.jpg",
-            "distracted_boyfriend": "TRENDING_MEMES/distracted_boyfriend.jpg", 
+            "distracted_boyfriend": "TRENDING_MEMES/distracted_boyfriend.jpg",
+            "drake_hotline_bling": "TRENDING_MEMES/drake_hotline_bling.jpg", 
             "woman_yelling_at_cat": "TRENDING_MEMES/woman_yelling_at_cat.jpg",
-            "drake": "TRENDING_MEMES/drake_hotline_bling.jpg"
+            "drake": "TRENDING_MEMES/drake_hotline_bling.jpg"  # fallback mapping
         } 
         
         # Load the template image or create fallback
