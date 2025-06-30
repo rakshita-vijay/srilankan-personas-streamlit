@@ -469,6 +469,21 @@ if st.session_state.selected_persona and st.session_state.questions:
             key="user_input",
             on_change=process_user_question
         )
+
+    # ===== MEME GENERATOR BUTTON =====
+    if st.button("🎭 Generate Meme from Conversation", key="generate_meme"):
+        meme_text = generate_meme_from_conversation(
+            st.session_state.previous_conversation,
+            st.session_state.selected_language
+        )
+        st.session_state.conversation_events.append({
+            "type": "meme",
+            "content": meme_text,
+            "time": time.time()
+        })
+        st.rerun()
+
+    # Progress Bar Section
     if st.session_state.bulk_running or st.session_state.paused:
         total_questions = len(st.session_state.questions)
         progress_percentage = (st.session_state.current_question_index / total_questions) * 100 if total_questions > 0 else 0
@@ -554,6 +569,14 @@ if st.session_state.selected_persona and st.session_state.questions:
                         unsafe_allow_html=True
                     )
                 st.markdown("") 
+            elif event["type"] == "meme":
+                st.markdown("---")
+                st.markdown("### 🎭 Generated Meme")
+                st.markdown(f"**{st.session_state.botname}:**")
+                st.code(event["content"], language="text")
+                st.markdown(f"*Generated at {time.strftime('%H:%M:%S', time.localtime(event['time']))}*")
+                st.markdown("---")
+                
             elif event["type"] == "bulk_started":
                 st.markdown("---")
                 st.success(":green[Bulk generation begins.]")
