@@ -286,52 +286,67 @@ def generate_image_meme_from_conversation(previous_conversation, language):
         )
         
         # Parse top and bottom text
+        # lines = meme_text.strip().split('\n')
+        # top_text = lines[0].strip('[]') if len(lines) > 0 else "TOP TEXT"
+        # bottom_text = lines[1].strip('[]') if len(lines) > 1 else "BOTTOM TEXT"
+
+        # Parse template name and text
         lines = meme_text.strip().split('\n')
-        top_text = lines[0].strip('[]') if len(lines) > 0 else "TOP TEXT"
-        bottom_text = lines[1].strip('[]') if len(lines) > 1 else "BOTTOM TEXT"
+        template_name = "drake"  # default
+        top_text = "TOP TEXT"
+        bottom_text = "BOTTOM TEXT"
+        
+        for line in lines:
+            if line.startswith("Template:"):
+                template_name = line.split(":", 1)[1].strip().lower().replace(" ", "_")
+            elif line.startswith("Top:"):
+                top_text = line.split(":", 1)[1].strip()
+            elif line.startswith("Bottom:"):
+                bottom_text = line.split(":", 1)[1].strip() 
         
         # Create meme image
-        meme_image = create_meme_image(top_text, bottom_text)
+        meme_image = create_meme_image(top_text, bottom_text, template_name)
         return meme_image, f"{top_text}\n{bottom_text}"
         
     except Exception as e:
         return None, f"Meme generation failed: {str(e)}"
 
-def create_meme_image(top_text, bottom_text, width=800, height=600):
-    """Create a meme image with top and bottom text"""
+def create_meme_image(top_text, bottom_text, template_name="drake", width=800, height=600):
+    """Create a meme image with top and bottom text using real templates"""
     try:
-        # Create a simple background (you can replace with actual image upload later)
-        img = Image.new('RGB', (width, height), color='white')
+        # Map template names to file names
+        template_files = {
+            "drake_hotline_bling": "TRENDING_MEMES/drake_hotline_bling.jpg",
+            "distracted_boyfriend": "TRENDING_MEMES/distracted_boyfriend.jpg", 
+            "woman_yelling_at_cat": "TRENDING_MEMES/woman_yelling_at_cat.jpg"
+        }
+        
+        # Load the template image or create fallback
+        template_path = template_files.get(template_name, None)
+        if template_path and os.path.exists(template_path):
+            img = Image.open(template_path)
+            img = img.resize((width, height))
+        else:
+            # Fallback: create a colored background with template name
+            img = Image.new('RGB', (width, height), color='blue')
+            draw = ImageDraw.Draw(img)
+            draw.text((10, 10), f"Missing: {template_name}", fill='white')
+        
         draw = ImageDraw.Draw(img)
         
-        # Draw a simple background pattern or solid color
-        # For demo purposes, creating a gradient background
-        for y in range(height):
-            color_value = int(255 * (1 - y / height))
-            draw.line([(0, y), (width, y)], fill=(color_value, color_value, 255))
-        
-        # Try to load a bold font, fall back to default if not available
+        # Try to load a bold font
         try:
-            font_size = 60
-            font = ImageFont.truetype("arial.ttf", font_size)
+            font = ImageFont.truetype("arial.ttf", 60)
         except:
-            try:
-                font = ImageFont.truetype("/System/Library/Fonts/Arial.ttf", 60)  # macOS
-            except:
-                try:
-                    font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 60)  # Linux
-                except:
-                    font = ImageFont.load_default()
+            font = ImageFont.load_default()
         
-        # Add text outline for better visibility
+        # Text outline function
         def draw_text_with_outline(draw, position, text, font, fill_color, outline_color, outline_width=3):
             x, y = position
-            # Draw outline
             for dx in range(-outline_width, outline_width + 1):
                 for dy in range(-outline_width, outline_width + 1):
                     if dx != 0 or dy != 0:
                         draw.text((x + dx, y + dy), text, font=font, fill=outline_color)
-            # Draw main text
             draw.text(position, text, font=font, fill=fill_color)
         
         # Calculate text positions
@@ -351,10 +366,10 @@ def create_meme_image(top_text, bottom_text, width=800, height=600):
         return img
         
     except Exception as e:
-        # Fallback: create simple text image
-        img = Image.new('RGB', (width, height), color='lightblue')
+        # Ultimate fallback
+        img = Image.new('RGB', (width, height), color='red')
         draw = ImageDraw.Draw(img)
-        draw.text((50, height//2), f"{top_text}\n\n{bottom_text}", fill='black')
+        draw.text((50, height//2), f"ERROR: {str(e)}", fill='white')
         return img
 
 def image_to_base64(img):
