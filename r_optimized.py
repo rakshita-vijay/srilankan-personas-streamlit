@@ -481,7 +481,7 @@ else:
 
 # PHASE 2: SETUP CONFIGURATION
 if not st.session_state.setup_completed:
-    st.title("🔧 Persona Configuration <33")
+    st.title("🔧 Persona Configuration")
     st.markdown(f"### Configuring: {st.session_state.botname} ({st.session_state.bot_origin})")
     st.markdown("---")
     st.subheader("📋 Select Personality Traits")
