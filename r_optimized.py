@@ -444,7 +444,7 @@ if persona_files:
             st.markdown('<span style="font-size:2em; font-weight:bold;">🎯 Persona</span>', unsafe_allow_html=True)
             st.markdown('<style> div[data-testid="stSelectbox"] {margin-top: -1.2em;} </style>', unsafe_allow_html=True)
             selected_file = st.selectbox(
-                "",
+                "-",
                 persona_options,
                 format_func=lambda x: os.path.basename(x).replace('.txt',''),
                 index=current_index,
@@ -531,7 +531,7 @@ if not st.session_state.setup_completed:
         if st.session_state.selected_language in st.session_state.available_languages:
             current_index = st.session_state.available_languages.index(st.session_state.selected_language)
         selected_language = st.selectbox(
-            "",
+            "-",
             options=st.session_state.available_languages,
             index=current_index,
             key="setup_language"
