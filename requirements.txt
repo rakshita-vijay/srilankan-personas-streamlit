@@ -2,3 +2,5 @@ llama-index-llms-google-genai
 google-generativeai
 pydantic
 pandas 
+fastapi
+uvicorn
