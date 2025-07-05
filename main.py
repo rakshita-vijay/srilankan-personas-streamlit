@@ -8,9 +8,17 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+
+API_KEY = os.getenv("GEMINI_API_KEY")
+if not API_KEY:
+    raise RuntimeError("❌ GEMINI_API_KEY is missing in environment!")
+
+genai.configure(api_key=API_KEY)
+
+
 app = FastAPI()
 
-API_KEY = os.getenv("GEMINI_API_KEY", "AIzaSyAWMudIst86dEBwP63BqFcy4mdjr34c87o")
+
 
 bot_names = {
     "female_mentor": "Amma Lakshmi",

@@ -14,6 +14,14 @@ from llama_index.llms.google_genai import GoogleGenAI
 from google import genai
 from PIL import Image, ImageDraw, ImageFont 
 
+import os
+API_KEY = os.getenv("GEMINI_API_KEY")
+if not API_KEY:
+    raise RuntimeError("❌ GEMINI_API_KEY is missing in environment!")
+
+genai.configure(api_key=API_KEY)
+
+
 PERSONAS_FOLDER = "Personas"
 QUESTIONS_FOLDER = "Questions"
 USER_INFO_FILE = "TO_INPUT/user_info.txt"
@@ -809,4 +817,4 @@ else:
     if not st.session_state.questions:
         st.error("No questions found for selected relationship type!")
     else:
-        st.error(f"Error loading persona: {st.session_state.selected_persona}") 
+        st.error(f"Error loading persona: {st.session_state.selected_persona}")
