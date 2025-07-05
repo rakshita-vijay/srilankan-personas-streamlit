@@ -11,7 +11,8 @@ import streamlit as st
 import pandas as pd 
 
 from llama_index.llms.google_genai import GoogleGenAI
-from google import genai
+# from google import genai
+import google.generativeai as genai
 from PIL import Image, ImageDraw, ImageFont 
 
 import os
